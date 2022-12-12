@@ -16,11 +16,10 @@ create table book(
     author varchar(256) not null,
     price real not null,
     isbn varchar(64) not null,
-    borrower int,
+    borrower varchar(64),
     create_time timestamp not null default current_timestamp,
     update_time timestamp not null default current_timestamp,
     primary key (id),
-    unique(name),
     unique(isbn)
 );
 

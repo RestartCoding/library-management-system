@@ -1,6 +1,6 @@
 insert into user(username, password)
 -- password 123456
-values ('admin', 'e10adc3949ba59abbe56e057f20f883e');
+values ('admin', '$2a$10$FUQQ3R3I5EH8yfrOqdghz.Gcxfcco7gC0vxYN.SOJAa0THnFp712i');
 
 insert into role(name)
 values ('administrator');

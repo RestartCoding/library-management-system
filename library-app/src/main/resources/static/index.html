@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>index</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
+</head>
+<body>
+
+<div>
+    <table id="books" lay-filter="test"></table>
+</div>
+
+<div>
+    <input type="button" value="add" class="layui-btn layui-btn-primary layui-border-orange" onclick="location.href='/addBook.html'">
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/layui.js"></script>
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#books'
+            , height: 312
+            , url: '/book/page' //数据接口
+            , request: {
+                pageName: 'pageNum',
+                limitName: 'pageSize'
+            }
+            , page: true //开启分页
+            , parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.message,
+                    "count": res.data.total,
+                    "data": res.data.list
+                }
+            }
+            , cols: [[ //表头
+                {field: 'id', title: 'ID', width: 80, sort: false, fixed: 'left'}
+                , {field: 'name', title: 'name', width: 80}
+                , {field: 'author', title: 'author', width: 80, sort: false}
+                , {field: 'price', title: 'price', width: 80}
+                , {field: 'isbn', title: 'isbn', width: 80}
+                , {field: 'borrower', title: 'borrower', width: 160, sort: false}
+                , {field: 'createTime', title: 'createTime', width: 200, sort: false}
+                , {field: 'updateTime', title: 'updateTime', width: 200}
+            ]]
+            , jump: function (obj, first) {
+                let curr = obj.curr;
+                let limit = obj.limit;
+                if (!first){
+
+                }
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

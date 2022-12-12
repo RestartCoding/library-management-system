@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js" type="module">
+    import axios from 'axios';
+</script>
+<div style="text-align: center">
+    <label>name: <input id="name"><br/></label>
+    <label>author: <input id="author"><br/></label>
+    <label>price: <input type="number" id="price"><br/></label>
+    <label>isbn: <input id="isbn"><br/></label>
+    <input type="button" value="submit" onclick="addBook()">
+</div>
+<script>
+    function addBook() {
+        const name = document.getElementById("name").value;
+        const author = document.getElementById("author").value;
+        const price = document.getElementById("price").value;
+        const isbn = document.getElementById("isbn").value;
+        axios({
+            url: '/book', method: 'POST', data: {
+                'name': name,
+                'author': author,
+                'price': price,
+                'isbn': isbn
+            }, headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            console.log(response);
+            location.href = '/index.html';
+        }).catch(function (error) {
+            if (error.response){
+                alert(error.response.data.message);
+            }
+        })
+    }
+</script>
+</body>
+</html>

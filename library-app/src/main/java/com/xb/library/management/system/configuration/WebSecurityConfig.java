@@ -39,10 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.logout().addLogoutHandler(new LogoutRecorder()).invalidateHttpSession(true);
 
-        http.formLogin().permitAll();
+        http.formLogin().loginPage("/login.html").loginProcessingUrl("/user/login").permitAll();
+
         http.csrf().disable();
         http.headers().frameOptions().disable();
-        http.authorizeRequests().antMatchers("/user/signUp").permitAll();
+        http.authorizeRequests().antMatchers("/user/signUp", "/signUp.html").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
     }
 

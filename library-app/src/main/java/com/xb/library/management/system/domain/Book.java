@@ -37,7 +37,7 @@ public class Book {
   @Size(max = 64, message = "isbn is too long.")
   private String isbn;
 
-  private Integer borrower;
+  private String borrower;
 
   @Column(insertable = false, updatable = false)
   private Date createTime;

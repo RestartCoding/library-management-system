@@ -36,7 +36,7 @@ public class CustomizerMethodSecurityConfiguration extends GlobalMethodSecurityC
         decisionVoters.add(roleVoter);
         decisionVoters.add(new AuthenticatedVoter());
 
-        decisionVoters.add(new TimeVoter());
+//        decisionVoters.add(new TimeVoter());
 
         return new UnanimousBased(decisionVoters);
     }
