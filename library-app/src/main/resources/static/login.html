@@ -3,12 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
 </head>
 <body>
-    <form method="post" action="/user/login">
-        username: <label><input name="username" placeholder="input your username"/></label><br/>
-        password: <label><input type="password" name="password" placeholder="input your password"/></label><br/>
-        <input type="submit" value="submit"> <input type="button" value="sign up" onclick="location.href='/signUp.html'">
+    <form method="post" action="/user/login" style="width: 20%;margin-left: 40%;margin-right: 40%;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">username</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" required  lay-verify="required" placeholder="please input your username" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">password</label>
+            <div class="layui-input-block">
+                <input type="password" name="password" required  lay-verify="required" placeholder="please input your password" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit lay-filter="formDemo">submit</button>
+                <button type="reset" class="layui-btn layui-btn-primary">reset</button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="location.href='/signUp.html'">sign up</button>
+            </div>
+        </div>
     </form>
 </body>
 </html>
