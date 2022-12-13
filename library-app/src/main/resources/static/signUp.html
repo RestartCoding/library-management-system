@@ -3,21 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>sign up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js" type="module">
     import axios from 'axios';
 </script>
 
-<form method="post" action="/user/signUp">
+<form method="post" action="/user/signUp" style="width: 20%;margin-left: 40%;margin-right: 40%;">
     <div style="text-align: center">
-        <h1>Sign up</h1>
+        <h1>sign up</h1>
     </div>
-    <div style="text-align: center">
-        username: <label><input id="username" name="username" placeholder="input your username"/></label><br/>
-        password: <label><input id="password" type="password" name="password"
-                                placeholder="input your password"/></label><br/>
-        <input type="button" value="submit" onclick="signUp()">
+    <div class="layui-form-item">
+        <label class="layui-form-label">username</label>
+        <div class="layui-input-block">
+            <input type="text" id="username" name="username" required  lay-verify="required" placeholder="please input your username" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">password</label>
+        <div class="layui-input-block">
+            <input type="password" id="password" name="password" required  lay-verify="required" placeholder="please input your password" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn layui-btn-primary" onclick="signUp()">submit</button>
+        </div>
     </div>
 </form>
 </body>
@@ -26,7 +38,7 @@
     function signUp() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        let instance = axios({
+        axios({
             url: '/user/signUp', method: 'POST', data: {
                 'username': username, 'password': password
             }, headers: {
@@ -37,7 +49,7 @@
         }).then(function (error) {
             console.log(error);
         });
-        instance.request();
+        location.href='/login.html';
     }
 
 </script>

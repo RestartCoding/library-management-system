@@ -1,5 +1,6 @@
 package com.xb.library.management.system.configuration;
 
+import com.xb.library.management.system.domain.SysConstant;
 import com.xb.library.management.system.domain.UserRole;
 import com.xb.library.management.system.repository.UserRoleRepository;
 import com.xb.library.management.system.service.UserService;
@@ -7,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -43,8 +43,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable();
         http.headers().frameOptions().disable();
-        http.authorizeRequests().antMatchers("/user/signUp", "/signUp.html").permitAll();
-        http.authorizeRequests().anyRequest().authenticated();
+
+        http.exceptionHandling().accessDeniedPage("/denied.html");
+
+        http.authorizeRequests().antMatchers("/user/signUp", "/signUp.html").permitAll()
+                .antMatchers("/user.html", "/index.html").hasRole(SysConstant.ROLE_ADMINISTRATOR)
+                .anyRequest().authenticated();
     }
 
     @Bean

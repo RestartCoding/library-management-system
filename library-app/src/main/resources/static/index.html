@@ -7,12 +7,24 @@
 </head>
 <body>
 
-<div>
-    <table id="books" lay-filter="test"></table>
+<div style="float: left;height: 900px;width: 200px;">
+        <ul class="layui-menu" id="docDemoMenu1">
+            <li lay-options="{id: 100}" onclick="location.href='/user.html'">
+                <div class="layui-menu-body-title">user</div>
+            </li>
+            <li lay-options="{id: 101}">
+                <div class="layui-menu-body-title">
+                    <a href="#">book <span class="layui-badge-dot"></span></a>
+                </div>
+            </li>
+        </ul>
 </div>
 
-<div>
-    <input type="button" value="add" class="layui-btn layui-btn-primary layui-border-orange" onclick="location.href='/addBook.html'">
+<div style="float:left;">
+    <table id="books" lay-filter="test"></table>
+    <div style="margin-left: 40%;margin-right: 40%; text-align: center">
+        <input type="button" value="add" class="layui-btn layui-btn-primary layui-border-orange" onclick="location.href='/addBook.html'">
+    </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/layui.js"></script>
@@ -48,13 +60,6 @@
                 , {field: 'createTime', title: 'createTime', width: 200, sort: false}
                 , {field: 'updateTime', title: 'updateTime', width: 200}
             ]]
-            , jump: function (obj, first) {
-                let curr = obj.curr;
-                let limit = obj.limit;
-                if (!first){
-
-                }
-            }
         });
 
     });

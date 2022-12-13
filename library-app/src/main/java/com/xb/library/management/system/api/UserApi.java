@@ -1,9 +1,8 @@
 package com.xb.library.management.system.api;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.xb.library.management.system.domain.ApiResponse;
-import com.xb.library.management.system.domain.SysConstant;
-import com.xb.library.management.system.domain.User;
+import com.xb.library.management.system.api.vo.UserPageReq;
+import com.xb.library.management.system.domain.*;
 import com.xb.library.management.system.view.UserRegistryView;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -45,4 +44,15 @@ public interface UserApi {
      */
     @PostMapping("/signUp")
     ApiResponse<Void> register(@JsonView(UserRegistryView.class) @Valid @RequestBody User user);
+
+    /**
+     * 用户分页查询
+     *
+     * @param pageInfo    pageInfo
+     * @param userPageReq userPageReq
+     * @return 用户分页
+     */
+    @PreAuthorize("hasRole('" + SysConstant.ROLE_ADMINISTRATOR + "')")
+    @GetMapping("/page")
+    ApiResponse<ApiPage<User>> page(@Valid PageInfo pageInfo, @Valid UserPageReq userPageReq);
 }

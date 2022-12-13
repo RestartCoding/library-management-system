@@ -37,9 +37,9 @@ public class BookServiceImpl implements BookService {
     @Override
     public ApiPage<Book> page(PageInfo pageInfo, BookPageReq req) {
         Book book = new Book();
-        ExampleMatcher.matching().withMatcher("borrower", ExampleMatcher.GenericPropertyMatcher::exact);
         book.setBorrower(req.getBorrower());
-        Example<Book> example = Example.of(book);
+        ExampleMatcher matcher = ExampleMatcher.matching().withMatcher("borrower", ExampleMatcher.GenericPropertyMatcher::exact);
+        Example<Book> example = Example.of(book, matcher);
         Page<Book> page =
                 bookRepository.findAll(example, PageRequest.of(pageInfo.getPageNum() - 1, pageInfo.getPageSize()));
         return ApiPage.fromPage(page);

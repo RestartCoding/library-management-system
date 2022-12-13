@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>user</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/layui.js"></script>
+</head>
+<body>
+<div>
+    <table id="users" lay-filter="test"></table>
+</div>
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#users'
+            , height: 312
+            , url: '/user/page' //数据接口
+            , request: {
+                pageName: 'pageNum',
+                limitName: 'pageSize'
+            }
+            , page: true //开启分页
+            , parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.message,
+                    "count": res.data.total,
+                    "data": res.data.list
+                }
+            }
+            , cols: [[ //表头
+                {field: 'id', title: 'ID', width: 80, sort: false, fixed: 'left'}
+                , {field: 'username', title: 'username', width: 80}
+                , {field: 'createTime', title: 'createTime', width: 200, sort: false}
+                , {field: 'updateTime', title: 'updateTime', width: 200}
+            ]]
+        });
+
+    });
+</script>
+</body>
+</html>

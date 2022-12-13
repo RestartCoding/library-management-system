@@ -2,18 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>add book</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js" type="module">
     import axios from 'axios';
 </script>
-<div style="text-align: center">
-    <label>name: <input id="name"><br/></label>
-    <label>author: <input id="author"><br/></label>
-    <label>price: <input type="number" id="price"><br/></label>
-    <label>isbn: <input id="isbn"><br/></label>
-    <input type="button" value="submit" onclick="addBook()">
+<div style="text-align: center; margin-left: 40%;margin-right: 40%;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">name</label>
+        <div class="layui-input-block">
+            <input type="text" id="name" name="name" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">author</label>
+        <div class="layui-input-block">
+            <input type="text" id="author" name="author" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">price</label>
+        <div class="layui-input-block">
+            <input type="text" id="price" name="price" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">isbn</label>
+        <div class="layui-input-block">
+            <input type="text" id="isbn" name="isbn" required  lay-verify="required" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit lay-filter="formDemo" onclick="addBook()">submit</button>
+        </div>
+    </div>
 </div>
 <script>
     function addBook() {
