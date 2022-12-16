@@ -4,42 +4,87 @@
     <meta charset="utf-8">
     <title>index</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
+    <style>
+        option {
+            width: 100px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js" type="module">
+        import axios from 'axios';
+    </script>
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="detail">detail</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">edit</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">del</a>
+<!--         这里同样支持 laytpl 语法，如： -->
+        {{#  if(d.borrowable){ }}
+            <a class="layui-btn layui-btn-xs" lay-event="borrow">borrow</a>
+        {{#  } }}
+    </script>
 </head>
 <body>
 
 <div style="float: left;height: 900px;width: 200px;">
-        <ul class="layui-menu" id="docDemoMenu1">
-            <li lay-options="{id: 100}" onclick="location.href='/user.html'">
-                <div class="layui-menu-body-title">user</div>
-            </li>
-            <li lay-options="{id: 101}">
-                <div class="layui-menu-body-title">
-                    <a href="#">book <span class="layui-badge-dot"></span></a>
-                </div>
-            </li>
-        </ul>
+    <ul class="layui-menu" id="docDemoMenu1">
+        <li lay-options="{id: 100}" onclick="location.href='/user.html'">
+            <div class="layui-menu-body-title">user</div>
+        </li>
+        <li lay-options="{id: 101}">
+            <div class="layui-menu-body-title">
+                <a href="#">book <span class="layui-badge-dot"></span></a>
+            </div>
+        </li>
+    </ul>
 </div>
 
 <div style="float:left;">
-    <table id="books" lay-filter="test"></table>
+
+    <div class="layui-form">
+        <!-- name 查询条件 -->
+        <div class="layui-form-item">
+            <label class="layui-form-label">name</label>
+            <div class="layui-input-block">
+                <input id="name" class="layui-input" onchange="reloadBookList()">
+            </div>
+        </div>
+
+        <!-- author 查询条件 -->
+        <div class="layui-form-item">
+            <label class="layui-form-label">author</label>
+            <div class="layui-input-block">
+                <input id="author" class="layui-input" onchange="reloadBookList()">
+            </div>
+        </div>
+    </div>
+
+    <table id="books" lay-filter="books"></table>
+
     <div style="margin-left: 40%;margin-right: 40%; text-align: center">
-        <input type="button" value="add" class="layui-btn layui-btn-primary layui-border-orange" onclick="location.href='/addBook.html'">
+        <input type="button" value="add" class="layui-btn layui-btn-primary layui-border-orange"
+               onclick="location.href='/addBook.html'">
     </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/layui.js"></script>
 <script>
+
     layui.use('table', function () {
         var table = layui.table;
-
         //第一个实例
         table.render({
+            id: 'bookList',
             elem: '#books'
             , height: 312
             , url: '/book/page' //数据接口
             , request: {
                 pageName: 'pageNum',
                 limitName: 'pageSize'
+            },
+            where: {
+                name: document.getElementById('name').value,
+                author: document.getElementById('author').value
             }
             , page: true //开启分页
             , parseData: function (res) {
@@ -56,13 +101,97 @@
                 , {field: 'author', title: 'author', width: 80, sort: false}
                 , {field: 'price', title: 'price', width: 80}
                 , {field: 'isbn', title: 'isbn', width: 80}
-                , {field: 'borrower', title: 'borrower', width: 160, sort: false}
                 , {field: 'createTime', title: 'createTime', width: 200, sort: false}
                 , {field: 'updateTime', title: 'updateTime', width: 200}
+                , { title: 'operate', width: 200, templet: '#barDemo'}
             ]]
         });
 
     });
+
+    /**
+     * 绑定工具条模板
+     */
+    layui.use('table', function (){
+        var table = layui.table;
+        //工具条事件
+        table.on('tool(books)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+
+            if(layEvent === 'detail'){ //查看
+                layer.open({
+                    title: 'Tips',
+                    content: 'book detail'
+                });
+            } else if(layEvent === 'del'){ //删除
+                layer.confirm('真的删除行么', function(index){
+                    layer.open({
+                        title: 'Tips',
+                        content: 'Del book'
+                    });
+                    // obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                    layer.close(index);
+                    //向服务端发送删除指令
+                });
+            } else if(layEvent === 'edit'){ //编辑
+                //do something
+
+                layer.open({
+                    title: 'Tips',
+                    content: 'edit book'
+                });
+
+                //同步更新缓存对应的值
+                // obj.update({
+                //     username: '123'
+                //     ,title: 'xxx'
+                // });
+            } else if(layEvent === 'borrow'){
+                let isbn = data.isbn;
+
+                axios({
+                    url: '/book/borrowing?isbn='+isbn,
+                    method: 'put'
+                }).then(function (response){
+                    if (response.data.code === 0){
+                        layer.open({
+                            title: 'Tips',
+                            content: 'borrow book success.'
+                        });
+                    }else {
+                        layer.open({
+                            title: 'Tips',
+                            content: response.data.message
+                        });
+                    }
+                }).catch(function (error){
+                    alert("request failed.")
+                })
+            }
+        });
+    })
+
+    layui.use('form', function () {
+        var form = layui.form;
+        form.on('select(borrowable)', function () {
+            layui.table.reload('bookList', {
+                where: {
+                    borrowable: document.getElementById('borrowable').value
+                }
+            })
+        })
+    })
+
+    function reloadBookList() {
+        layui.table.reload('bookList', {
+            where: {
+                name: document.getElementById('name').value,
+                author: document.getElementById('author').value
+            }
+        });
+    }
 </script>
 </body>
 </html>

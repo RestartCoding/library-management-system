@@ -43,7 +43,7 @@ public interface UserApi {
      * @return no data
      */
     @PostMapping("/signUp")
-    ApiResponse<Void> register(@JsonView(UserRegistryView.class) @Valid @RequestBody User user);
+    ApiResponse<Void> register(@JsonView({UserRegistryView.class}) @Valid @RequestBody User user);
 
     /**
      * 用户分页查询

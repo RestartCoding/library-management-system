@@ -1,8 +1,9 @@
 package com.xb.library.management.system.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.xb.library.management.system.view.LoginView;
+import com.xb.library.management.system.view.PhoneLoginView;
 import com.xb.library.management.system.view.UserRegistryView;
+import com.xb.library.management.system.view.UsernameLoginView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,45 +14,48 @@ import java.util.Objects;
 
 /**
  * @author xiabiao
- * @date 2022-12-05
  */
 @Data
 @Entity
 public class User {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-  @NotEmpty(message = "username can't be empty.")
-  @Size(max = 64, message = "username is too long.")
-  @JsonView({LoginView.class, UserRegistryView.class})
-  private String username;
+    @NotEmpty(message = "username can't be empty.")
+    @Size(max = 64, message = "username is too long.")
+    @JsonView({UsernameLoginView.class, UserRegistryView.class})
+    private String username;
 
-  @NotEmpty(message = "password can't be empty.")
-  @JsonView({LoginView.class, UserRegistryView.class})
-  private String password;
+    @JsonView({PhoneLoginView.class, UserRegistryView.class})
+    @Size(max = 32, message = "phone is too long.")
+    private String phone;
 
-  @Column(insertable = false, updatable = false)
-  private Date createTime;
+    @NotEmpty(message = "password can't be empty.")
+    @JsonView({UsernameLoginView.class, UserRegistryView.class, PhoneLoginView.class})
+    private String password;
 
-  @Column(insertable = false)
-  private Date updateTime;
+    @Column(insertable = false, updatable = false)
+    private Date createTime;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    @Column(insertable = false)
+    private Date updateTime;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return username.equals(user.username);
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    User user = (User) o;
-    return username.equals(user.username);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(username);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
+    }
 }

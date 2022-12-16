@@ -4,10 +4,11 @@ import lombok.Data;
 
 /**
  * @author xiabiao
- * @date 2022-12-12
  */
 @Data
 public class BookPageReq {
 
-    private String borrower;
+    private String name;
+
+    private String author;
 }

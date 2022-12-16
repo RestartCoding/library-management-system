@@ -46,8 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.exceptionHandling().accessDeniedPage("/denied.html");
 
-        http.authorizeRequests().antMatchers("/user/signUp", "/signUp.html").permitAll()
-                .antMatchers("/user.html", "/index.html").hasRole(SysConstant.ROLE_ADMINISTRATOR)
+        http.authorizeRequests().antMatchers("/user/signUp", "/signUp.html", "/h2-console/**").permitAll()
+                .antMatchers("/user.html").hasRole(SysConstant.ROLE_ADMINISTRATOR)
                 .anyRequest().authenticated();
     }
 

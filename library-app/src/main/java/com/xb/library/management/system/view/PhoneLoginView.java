@@ -1,7 +1,7 @@
 package com.xb.library.management.system.view;
 
 /**
- * @author xiabiao
+ * @author jack
  */
-public interface UserRegistryView {
+public interface PhoneLoginView {
 }

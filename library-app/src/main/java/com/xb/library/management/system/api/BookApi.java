@@ -36,7 +36,7 @@ public interface BookApi {
      * @return api response
      */
     @GetMapping("/page")
-    @PreAuthorize("hasRole('" + SysConstant.ROLE_ADMINISTRATOR + "')")
+//    @PreAuthorize("hasRole('" + SysConstant.ROLE_ADMINISTRATOR + "')")
     ResponseEntity<ApiResponse<ApiPage<Book>>> pageBook(@Valid PageInfo pageInfo, BookPageReq req);
 
     /**
@@ -52,11 +52,11 @@ public interface BookApi {
     /**
      * 借书
      *
-     * @param bookName 书名
+     * @param isbn isbn
      * @return no data
      */
     @PutMapping("/borrowing")
-    ResponseEntity<ApiResponse<Void>> borrow(@RequestParam String bookName);
+    ResponseEntity<ApiResponse<Void>> borrow(@RequestParam String isbn);
 
     /**
      * 我的借阅信息

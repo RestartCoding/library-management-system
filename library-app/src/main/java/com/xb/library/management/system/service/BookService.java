@@ -36,7 +36,7 @@ public interface BookService {
     /**
      * 借书
      *
-     * @param bookName bookName
+     * @param isbn isbn
      */
-    void borrow(String bookName);
+    void borrow(String isbn);
 }

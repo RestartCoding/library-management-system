@@ -2,11 +2,13 @@ package com.xb.library.management.system.api;
 
 import com.google.common.util.concurrent.RateLimiter;
 import com.xb.library.management.system.api.vo.BookPageReq;
-import com.xb.library.management.system.domain.*;
+import com.xb.library.management.system.domain.ApiPage;
+import com.xb.library.management.system.domain.ApiResponse;
+import com.xb.library.management.system.domain.Book;
+import com.xb.library.management.system.domain.PageInfo;
 import com.xb.library.management.system.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -54,14 +56,13 @@ public class BookApiController implements BookApi {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Void>> borrow(String bookName) {
-        bookService.borrow(bookName);
+    public ResponseEntity<ApiResponse<Void>> borrow(String isbn) {
+        bookService.borrow(isbn);
         return ResponseEntity.ok(ApiResponse.<Void>builder().code(0).build());
     }
 
     @Override
     public ResponseEntity<ApiResponse<ApiPage<Book>>> borrowInfo(PageInfo pageInfo, BookPageReq req) {
-        req.setBorrower(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         ApiPage<Book> page = bookService.page(pageInfo, req);
         return ResponseEntity.ok(ApiResponse.<ApiPage<Book>>builder().code(0).data(page).build());
     }

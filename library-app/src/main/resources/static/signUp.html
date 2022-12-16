@@ -15,17 +15,25 @@
         <h1>sign up</h1>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">username</label>
+        <label class="layui-form-label">username:</label>
         <div class="layui-input-block">
             <input type="text" id="username" name="username" required  lay-verify="required" placeholder="please input your username" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">password</label>
+        <label class="layui-form-label">password:</label>
         <div class="layui-input-block">
             <input type="password" id="password" name="password" required  lay-verify="required" placeholder="please input your password" autocomplete="off" class="layui-input">
         </div>
     </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">phone:</label>
+        <div class="layui-input-block">
+            <input type="text" id="phone" name="phone" required  lay-verify="required" placeholder="please input your phone" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
     <div class="layui-form-item">
         <div class="layui-input-block">
             <button type="button" class="layui-btn layui-btn-primary" onclick="signUp()">submit</button>
@@ -38,16 +46,20 @@
     function signUp() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
+        let phone = document.getElementById('phone').value;
         axios({
             url: '/user/signUp', method: 'POST', data: {
-                'username': username, 'password': password
+                'username': username, 'password': password, 'phone': phone
             }, headers: {
                 'Content-Type': 'application/json'
             }
         }).then(function (response) {
             console.log(response);
         }).then(function (error) {
-            console.log(error);
+            layui.open({
+                title: 'register error',
+                content: error.data.message
+            })
         });
         location.href='/login.html';
     }

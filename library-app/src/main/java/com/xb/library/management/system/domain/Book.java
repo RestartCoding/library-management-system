@@ -1,7 +1,6 @@
 package com.xb.library.management.system.domain;
 
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
@@ -18,7 +17,7 @@ import java.util.Date;
 public class Book {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @NotEmpty(message = "name can't be empty.")
@@ -37,7 +36,7 @@ public class Book {
   @Size(max = 64, message = "isbn is too long.")
   private String isbn;
 
-  private String borrower;
+  private Boolean borrowable;
 
   @Column(insertable = false, updatable = false)
   private Date createTime;
