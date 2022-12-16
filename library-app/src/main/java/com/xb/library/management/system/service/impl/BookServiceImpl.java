@@ -5,7 +5,6 @@ import com.xb.library.management.system.domain.ApiPage;
 import com.xb.library.management.system.domain.Book;
 import com.xb.library.management.system.domain.BorrowInfo;
 import com.xb.library.management.system.domain.PageInfo;
-import com.xb.library.management.system.enums.BorrowStatus;
 import com.xb.library.management.system.exception.BusinessException;
 import com.xb.library.management.system.repository.BookRepository;
 import com.xb.library.management.system.repository.BorrowInfoRepository;
@@ -26,12 +25,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * @author xiabiao
- * @date 2022-12-02
  */
 @Service
 public class BookServiceImpl implements BookService {
@@ -63,6 +62,9 @@ public class BookServiceImpl implements BookService {
                 if (StringUtils.hasText(req.getAuthor())) {
                     predicates.add(criteriaBuilder.like(root.get("author"), "%" + req.getAuthor() + "%"));
                 }
+                if (StringUtils.hasText(req.getIsbn())){
+                    predicates.add(criteriaBuilder.like(root.get("isbn"), "%" + req.getIsbn() + "%"));
+                }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         };
@@ -93,7 +95,7 @@ public class BookServiceImpl implements BookService {
         Specification<BorrowInfo> specification = new Specification<BorrowInfo>() {
             @Override
             public Predicate toPredicate(Root<BorrowInfo> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.and(criteriaBuilder.notEqual(root.get("status"), BorrowStatus.RETURNED.getCode()),
+                return criteriaBuilder.and(criteriaBuilder.isNull(root.get("returnTime")),
                         criteriaBuilder.and(criteriaBuilder.equal(root.get("isbn"), isbn)));
             }
         };
@@ -111,7 +113,35 @@ public class BookServiceImpl implements BookService {
         borrowInfo.setUsername(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         borrowInfo.setIsbn(isbn);
         borrowInfo.setBookName(optionalBook.get().getName());
-        borrowInfo.setStatus(BorrowStatus.UNCLAIMED.getCode());
+        borrowInfo.setBorrowTime(new Date());
         borrowInfoRepository.saveAndFlush(borrowInfo);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    @Override
+    public void returnBook(String isbn) {
+
+        Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
+        if (!optionalBook.isPresent()) {
+            LOGGER.error("Failed to return book. The book [{}] does not exist.", isbn);
+            throw new BusinessException("The book does not exist.");
+        }
+
+        Optional<BorrowInfo> optionalBorrowInfo = borrowInfoRepository.findByIsbnAndReturnTimeIsNull(isbn);
+        if (!optionalBorrowInfo.isPresent()) {
+            String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+            LOGGER.error("Failed to return book. The user [{}] does not borrow book [{}]", username, isbn);
+            throw new BusinessException("The user does not borrow book.");
+        }
+
+        BorrowInfo borrowInfo = optionalBorrowInfo.get();
+        borrowInfo.setReturnTime(new Date());
+
+        Book book = optionalBook.get();
+        book.setBorrowable(true);
+
+        borrowInfoRepository.saveAndFlush(borrowInfo);
+
+        bookRepository.saveAndFlush(book);
     }
 }

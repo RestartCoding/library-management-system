@@ -24,9 +24,14 @@ public class BorrowInfo {
     private String bookName;
 
     /**
-     * @see BorrowStatus
+     * 借入时间
      */
-    private Integer status;
+    private Date borrowTime;
+
+    /**
+     * 归还时间
+     */
+    private Date returnTime;
 
     @Column(updatable = false, insertable = false)
     private Date createTime;

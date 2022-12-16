@@ -28,5 +28,5 @@ public enum BorrowStatus {
         this.code = code;
     }
 
-    private int code;
+    private final int code;
 }

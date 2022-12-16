@@ -2,14 +2,12 @@ package com.xb.library.management.system.api;
 
 import com.google.common.util.concurrent.RateLimiter;
 import com.xb.library.management.system.api.vo.BookPageReq;
-import com.xb.library.management.system.domain.ApiPage;
-import com.xb.library.management.system.domain.ApiResponse;
-import com.xb.library.management.system.domain.Book;
-import com.xb.library.management.system.domain.PageInfo;
+import com.xb.library.management.system.domain.*;
 import com.xb.library.management.system.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.concurrent.TimeUnit;
@@ -17,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author xiabiao
  */
-@Controller
+@RestController
 public class BookApiController implements BookApi {
 
-    private BookService bookService;
+    private final BookService bookService;
 
     public BookApiController(BookService bookService) {
         this.bookService = bookService;
@@ -30,12 +28,12 @@ public class BookApiController implements BookApi {
     private final RateLimiter limiter = RateLimiter.create(100);
 
     @Override
-    public ResponseEntity<ApiResponse> saveBook(Book book) {
+    public ResponseEntity<ApiResponse<Void>> saveBook(Book book) {
         limiter.acquire();
         boolean success = limiter.tryAcquire(1, 0, TimeUnit.SECONDS);
         if (success) {
             bookService.saveBook(book);
-            ApiResponse apiResponse = ApiResponse.builder().code(0).build();
+            ApiResponse<Void> apiResponse = ApiResponse.<Void>builder().code(0).build();
             return ResponseEntity.ok(apiResponse);
         }
         throw new HttpServerErrorException(HttpStatus.REQUEST_TIMEOUT);
@@ -59,6 +57,13 @@ public class BookApiController implements BookApi {
     public ResponseEntity<ApiResponse<Void>> borrow(String isbn) {
         bookService.borrow(isbn);
         return ResponseEntity.ok(ApiResponse.<Void>builder().code(0).build());
+    }
+
+    @Override
+    @PreAuthorize("hasRole('" + SysConstant.ROLE_ADMINISTRATOR + "')")
+    public ApiResponse<Void> returnBook(String isbn) {
+        bookService.returnBook(isbn);
+        return ApiResponse.<Void>builder().code(0).message("return book success.").build();
     }
 
     @Override

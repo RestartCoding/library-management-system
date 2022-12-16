@@ -26,7 +26,7 @@ public interface BookApi {
      */
     @PostMapping
     @PreAuthorize("hasRole('" + SysConstant.ROLE_ADMINISTRATOR + "')")
-    ResponseEntity<ApiResponse> saveBook(@RequestBody @Valid Book book);
+    ResponseEntity<ApiResponse<Void>> saveBook(@RequestBody @Valid Book book);
 
     /**
      * 书籍分页
@@ -57,6 +57,15 @@ public interface BookApi {
      */
     @PutMapping("/borrowing")
     ResponseEntity<ApiResponse<Void>> borrow(@RequestParam String isbn);
+
+    /**
+     * 还书
+     *
+     * @param isbn isbn
+     * @return no data
+     */
+    @PutMapping("/returnBook")
+    ApiResponse<Void> returnBook(@RequestParam String isbn);
 
     /**
      * 我的借阅信息

@@ -7,7 +7,6 @@ import com.xb.library.management.system.domain.PageInfo;
 
 /**
  * @author xiabiao
- * @date 2022-12-02
  */
 public interface BookService {
     /**
@@ -21,7 +20,7 @@ public interface BookService {
      * 分页查询数据
      *
      * @param pageInfo pageInfo
-     * @param req req
+     * @param req      req
      * @return 分页数据
      */
     ApiPage<Book> page(PageInfo pageInfo, BookPageReq req);
@@ -39,4 +38,11 @@ public interface BookService {
      * @param isbn isbn
      */
     void borrow(String isbn);
+
+    /**
+     * 还书
+     *
+     * @param isbn isbn
+     */
+    void returnBook(String isbn);
 }

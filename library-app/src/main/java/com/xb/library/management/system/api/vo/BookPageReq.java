@@ -11,4 +11,6 @@ public class BookPageReq {
     private String name;
 
     private String author;
+
+    private String isbn;
 }

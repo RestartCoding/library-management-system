@@ -50,7 +50,8 @@ create table borrow_info(
     username varchar(64) not null,
     isbn varchar(64) not null,
     book_name varchar(256) not null,
-    status tinyint not null,
+    borrow_time timestamp not null default current_timestamp,
+    return_time timestamp  default current_timestamp,
     create_time timestamp not null default current_timestamp,
     update_time timestamp not null default current_timestamp,
     primary key (id)
