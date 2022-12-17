@@ -55,4 +55,10 @@ public class BookRepositoryTest {
         List<Book> books = bookRepository.findAll(specification);
         Assert.assertTrue(books.size() > 0);
     }
+
+    @Test
+    public void test01(){
+        List<Book> books = bookRepository.findTop3ByImagesIsNotNullOrderByCreateTimeDesc();
+        Assert.assertTrue(books.size() > 0);
+    }
 }

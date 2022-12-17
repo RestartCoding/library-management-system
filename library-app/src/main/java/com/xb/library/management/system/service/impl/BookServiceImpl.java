@@ -143,4 +143,9 @@ public class BookServiceImpl implements BookService {
 
         bookRepository.saveAndFlush(book);
     }
+
+    @Override
+    public List<Book> listPopular() {
+        return bookRepository.findTop3ByImagesIsNotNullOrderByCreateTimeDesc();
+    }
 }

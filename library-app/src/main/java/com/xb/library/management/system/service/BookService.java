@@ -5,6 +5,8 @@ import com.xb.library.management.system.domain.ApiPage;
 import com.xb.library.management.system.domain.Book;
 import com.xb.library.management.system.domain.PageInfo;
 
+import java.util.List;
+
 /**
  * @author xiabiao
  */
@@ -45,4 +47,11 @@ public interface BookService {
      * @param isbn isbn
      */
     void returnBook(String isbn);
+
+    /**
+     * list popular book
+     *
+     * @return popular book list
+     */
+    List<Book> listPopular();
 }

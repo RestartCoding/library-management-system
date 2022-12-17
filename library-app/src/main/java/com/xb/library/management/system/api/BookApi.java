@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * book api
@@ -76,4 +77,12 @@ public interface BookApi {
      */
     @GetMapping("/borrowInfo")
     ResponseEntity<ApiResponse<ApiPage<Book>>> borrowInfo(@Valid PageInfo pageInfo, @Valid BookPageReq req);
+
+    /**
+     * list popular book
+     *
+     * @return popular book list
+     */
+    @GetMapping("/popularList")
+    ApiResponse<List<Book>> listPopular();
 }

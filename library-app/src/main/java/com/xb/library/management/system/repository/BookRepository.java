@@ -36,4 +36,6 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
      * @return book
      */
     Optional<Book> findByIsbn(String isbn);
+
+    List<Book> findTop3ByImagesIsNotNullOrderByCreateTimeDesc();
 }

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -70,5 +71,11 @@ public class BookApiController implements BookApi {
     public ResponseEntity<ApiResponse<ApiPage<Book>>> borrowInfo(PageInfo pageInfo, BookPageReq req) {
         ApiPage<Book> page = bookService.page(pageInfo, req);
         return ResponseEntity.ok(ApiResponse.<ApiPage<Book>>builder().code(0).data(page).build());
+    }
+
+    @Override
+    public ApiResponse<List<Book>> listPopular() {
+        List<Book> popular = bookService.listPopular();
+        return ApiResponse.<List<Book>>builder().code(0).message("operate success.").data(popular).build();
     }
 }

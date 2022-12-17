@@ -18,6 +18,7 @@ create table book(
     author varchar(256) not null,
     price real not null,
     isbn varchar(64) not null,
+    images varchar(512),
     borrowable boolean not null default true,
     create_time timestamp not null default current_timestamp,
     update_time timestamp not null default current_timestamp,
