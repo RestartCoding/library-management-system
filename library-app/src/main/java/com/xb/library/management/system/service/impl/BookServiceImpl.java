@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,21 +49,18 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public ApiPage<Book> page(PageInfo pageInfo, BookPageReq req) {
-        Specification<Book> specification = new Specification<Book>() {
-            @Override
-            public Predicate toPredicate(Root<Book> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                List<Predicate> predicates = new ArrayList<>();
-                if (StringUtils.hasText(req.getName())) {
-                    predicates.add(criteriaBuilder.like(root.get("name"), "%" + req.getName() + "%"));
-                }
-                if (StringUtils.hasText(req.getAuthor())) {
-                    predicates.add(criteriaBuilder.like(root.get("author"), "%" + req.getAuthor() + "%"));
-                }
-                if (StringUtils.hasText(req.getIsbn())){
-                    predicates.add(criteriaBuilder.like(root.get("isbn"), "%" + req.getIsbn() + "%"));
-                }
-                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        Specification<Book> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (StringUtils.hasText(req.getName())) {
+                predicates.add(criteriaBuilder.like(root.get("name"), "%" + req.getName() + "%"));
             }
+            if (StringUtils.hasText(req.getAuthor())) {
+                predicates.add(criteriaBuilder.like(root.get("author"), "%" + req.getAuthor() + "%"));
+            }
+            if (StringUtils.hasText(req.getIsbn())) {
+                predicates.add(criteriaBuilder.like(root.get("isbn"), "%" + req.getIsbn() + "%"));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
         Page<Book> page =
                 bookRepository.findAll(specification, PageRequest.of(pageInfo.getPageNum() - 1, pageInfo.getPageSize()));
@@ -75,9 +69,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public void removeBook(String name) {
-        int rows = bookRepository.deleteByName(name);
+    public void removeBook(String isbn) {
+        Optional<BorrowInfo> optionalBorrowInfo = borrowInfoRepository.findByIsbnAndReturnTimeIsNull(isbn);
+        if (optionalBorrowInfo.isPresent()) {
+            LOGGER.error("Failed to delete book [{}].The book is lent out.", isbn);
+            throw new BusinessException("The book is lent out.");
+        }
+        int rows = bookRepository.deleteByIsbn(isbn);
         if (rows == 0) {
+            LOGGER.error("Failed to delete book [{}].The book does not exist.", isbn);
             throw new BusinessException("The book does not exist.");
         }
     }
@@ -92,13 +92,9 @@ public class BookServiceImpl implements BookService {
             throw new BusinessException("The book does not exist.");
         }
 
-        Specification<BorrowInfo> specification = new Specification<BorrowInfo>() {
-            @Override
-            public Predicate toPredicate(Root<BorrowInfo> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.and(criteriaBuilder.isNull(root.get("returnTime")),
+        Specification<BorrowInfo> specification = (root, query, criteriaBuilder) ->
+                criteriaBuilder.and(criteriaBuilder.isNull(root.get("returnTime")),
                         criteriaBuilder.and(criteriaBuilder.equal(root.get("isbn"), isbn)));
-            }
-        };
 
         long count = borrowInfoRepository.count(specification);
         if (count > 0) {

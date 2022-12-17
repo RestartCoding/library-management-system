@@ -48,9 +48,9 @@ public class BookApiController implements BookApi {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Void>> remove(String name) {
-        bookService.removeBook(name);
-        return ResponseEntity.ok(ApiResponse.<Void>builder().code(0).build());
+    public ResponseEntity<ApiResponse<Void>> remove(String isbn) {
+        bookService.removeBook(isbn);
+        return ResponseEntity.ok(ApiResponse.<Void>builder().code(0).message("delete success").build());
     }
 
     @Override

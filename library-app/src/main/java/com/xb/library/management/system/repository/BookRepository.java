@@ -16,10 +16,10 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
     /**
      * 根据书名删除数据
      *
-     * @param name name
+     * @param isbn isbn
      * @return 删除记录数
      */
-    int deleteByName(String name);
+    int deleteByIsbn(String isbn);
 
     /**
      * 书名查找

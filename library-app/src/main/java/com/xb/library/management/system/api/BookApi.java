@@ -42,12 +42,12 @@ public interface BookApi {
     /**
      * 删除书籍
      *
-     * @param name name
+     * @param isbn isbn
      * @return no data
      */
     @DeleteMapping
     @PreAuthorize("hasRole('" + SysConstant.ROLE_ADMINISTRATOR + "')")
-    ResponseEntity<ApiResponse<Void>> remove(@RequestParam String name);
+    ResponseEntity<ApiResponse<Void>> remove(@RequestParam String isbn);
 
     /**
      * 借书

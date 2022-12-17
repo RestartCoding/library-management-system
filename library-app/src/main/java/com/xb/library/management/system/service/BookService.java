@@ -28,9 +28,9 @@ public interface BookService {
     /**
      * 删除书籍
      *
-     * @param name 书名
+     * @param isbn isbn
      */
-    void removeBook(String name);
+    void removeBook(String isbn);
 
     /**
      * 借书

@@ -4,9 +4,13 @@
     <meta charset="utf-8">
     <title>index</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/bootstrap.css">
     <style>
-        option {
-            width: 100px;
+        .nav-div {
+            display: grid;
+        }
+        .nav {
+            margin: auto;
         }
     </style>
 
@@ -28,45 +32,46 @@
 </head>
 <body>
 
-<div style="float: left;height: 900px;width: 200px;">
-    <ul class="layui-menu" id="docDemoMenu1">
-        <li lay-options="{id: 100}" onclick="location.href='/user.html'">
-            <div class="layui-menu-body-title">user</div>
+<div class="nav-div">
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/user.html">User</a>
         </li>
-        <li lay-options="{id: 101}">
-            <div class="layui-menu-body-title">
-                <a href="#">book <span class="layui-badge-dot"></span></a>
-            </div>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Book</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled">Disabled</a>
         </li>
     </ul>
 </div>
 
-<div style="float:left;">
+<div style="float: left;width: 10%;text-align: center;background-color: gray">
+    广告栏
+</div>
 
-    <div class="layui-form">
-        <!-- name 查询条件 -->
-        <div class="layui-form-item">
-            <label class="layui-form-label">name</label>
-            <div class="layui-input-block">
-                <input id="name" class="layui-input" onchange="reloadBookList()">
-            </div>
+<div style="float:left;width: 80%;">
+
+    <form class="row g-3">
+        <div class="col-md-2">
+            <label for="name" class="form-label">name</label>
+            <input class="form-control" id="name" onchange="reloadBookList()">
         </div>
 
-        <!-- author 查询条件 -->
-        <div class="layui-form-item">
-            <label class="layui-form-label">author</label>
-            <div class="layui-input-block">
-                <input id="author" class="layui-input" onchange="reloadBookList()">
-            </div>
+        <div class="col-md-2">
+            <label for="author" class="form-label">author</label>
+            <input class="form-control" id="author" onchange="reloadBookList()">
         </div>
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">isbn</label>
-            <div class="layui-input-block">
-                <input id="isbn" class="layui-input" onchange="reloadBookList()">
-            </div>
+        <div class="col-md-2">
+            <label for="isbn" class="form-label">isbn</label>
+            <input class="form-control" id="isbn" onchange="reloadBookList()">
         </div>
-    </div>
+
+    </form>
 
     <table id="books" lay-filter="books"></table>
 
@@ -74,6 +79,10 @@
         <input type="button" value="add" class="layui-btn layui-btn-primary layui-border-orange"
                onclick="location.href='/addBook.html'">
     </div>
+</div>
+
+<div style="width: 10%;background-color: #bfa;float: left">
+    广告栏
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/layui.js"></script>
@@ -85,7 +94,6 @@
         table.render({
             id: 'bookList',
             elem: '#books'
-            , height: 312
             , url: '/book/page' //数据接口
             , request: {
                 pageName: 'pageNum',
@@ -107,13 +115,13 @@
             }
             , cols: [[ //表头
                 {field: 'id', title: 'ID', width: 80, sort: false, fixed: 'left'}
-                , {field: 'name', title: 'name', width: 80}
-                , {field: 'author', title: 'author', width: 80, sort: false}
+                , {field: 'name', title: 'name', width: 200}
+                , {field: 'author', title: 'author', width: 200, sort: false}
                 , {field: 'price', title: 'price', width: 80}
-                , {field: 'isbn', title: 'isbn', width: 80}
-                , {field: 'createTime', title: 'createTime', width: 200, sort: false}
-                , {field: 'updateTime', title: 'updateTime', width: 200}
-                , {title: 'operate', width: 200, templet: '#barDemo'}
+                , {field: 'isbn', title: 'isbn', width: 200}
+                , {field: 'createTime', title: 'createTime', width: 250, sort: false}
+                , {field: 'updateTime', title: 'updateTime', width: 250}
+                , {title: 'operate', width: 300, templet: '#barDemo'}
             ]]
         });
 
@@ -136,14 +144,25 @@
                     content: 'book detail'
                 });
             } else if (layEvent === 'del') { //删除
-                layer.confirm('真的删除行么', function (index) {
-                    layer.open({
-                        title: 'Tips',
-                        content: 'Del book'
-                    });
-                    // obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                layer.confirm('confirm to delete?', function (index) {
                     layer.close(index);
                     //向服务端发送删除指令
+                    axios({
+                        url: '/book?isbn=' + data.isbn,
+                        method: 'delete'
+                    }).then(function (resp){
+                        layer.open({
+                            title: 'tips',
+                            content: resp.data.message
+                        });
+
+                        reloadBookList();
+                    }).catch(function (error){
+                        layer.open({
+                            title: 'tips',
+                            content: 'request failed'
+                        });
+                    })
                 });
             } else if (layEvent === 'edit') { //编辑
                 //do something
