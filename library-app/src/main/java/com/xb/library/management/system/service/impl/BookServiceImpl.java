@@ -60,6 +60,9 @@ public class BookServiceImpl implements BookService {
             if (StringUtils.hasText(req.getIsbn())) {
                 predicates.add(criteriaBuilder.like(root.get("isbn"), "%" + req.getIsbn() + "%"));
             }
+            if (req.getBorrowable() != null){
+                predicates.add(criteriaBuilder.equal(root.get("borrowable"), req.getBorrowable()));
+            }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
         Page<Book> page =

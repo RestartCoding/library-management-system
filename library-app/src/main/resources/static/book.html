@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>book</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <script src="https://code.jquery.com/jquery-3.6.2.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js" type="module"></script>
+    <script src="/js/header.js"></script>
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="detail">detail</a>
+        <a class="layui-btn layui-btn-xs" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
+           lay-event="edit">edit</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">del</a>
+        <!--         这里同样支持 laytpl 语法，如： -->
+        {{#  if(d.borrowable){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="borrow">borrow</a>
+        {{#  } }}
+
+        {{#  if(!d.borrowable){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="returnBook">returnBook</a>
+        {{#  } }}
+    </script>
+</head>
+<script>
+    writeHeader();
+</script>
+<body>
+
+<div style="float: left;width: 10%;text-align: center;background-color: gray">
+    广告栏
+</div>
+
+<div style="float:left;width: 80%;">
+
+    <form class="row g-3">
+        <div class="col-md-2">
+            <label for="nameQuery" class="form-label">name</label>
+            <input class="form-control" id="nameQuery" onchange="reloadBookList()">
+        </div>
+
+        <div class="col-md-2">
+            <label for="authorQuery" class="form-label">author</label>
+            <input class="form-control" id="authorQuery" onchange="reloadBookList()">
+        </div>
+
+        <div class="col-md-2">
+            <label for="isbnQuery" class="form-label">isbn</label>
+            <input class="form-control" id="isbnQuery" onchange="reloadBookList()">
+        </div>
+
+        <div class="col-md-2">
+            <label for="borrowableQuery" class="form-label">borrowable</label>
+            <select id="borrowableQuery" class="form-select" aria-label="Default select example"
+                    onchange="reloadBookList()">
+                <option value="" selected>please select</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+            </select>
+        </div>
+    </form>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="bookModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="layui-form-item" style="display: none">
+                            <label class="layui-form-label">name</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="id" name="name" required lay-verify="required" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">name</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="name" name="name" required lay-verify="required"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">author</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="author" name="author" required lay-verify="required"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">price</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="price" name="price" required lay-verify="required"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">isbn</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="isbn" name="isbn" required lay-verify="required"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="saveBook()">Save
+                        changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table id="books" lay-filter="books"></table>
+
+    <div style="margin-left: 40%;margin-right: 40%; text-align: center">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="initBookModal()">add</button>
+    </div>
+</div>
+
+<div style="width: 10%;background-color: #bfa;float: left">
+    广告栏
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/layui.js"></script>
+<script>
+
+    /**
+     * 构造查询条件
+     * @returns {{borrowable: (*|jQuery), author: (*|jQuery), isbn: (*|jQuery), name: (*|jQuery)}}
+     */
+    function buildWhere() {
+        return {
+            name: $("#nameQuery").val(),
+            author: $("#authorQuery").val(),
+            isbn: $("#isbnQuery").val(),
+            borrowable: $("#borrowableQuery").val(),
+        };
+    }
+
+    layui.use('table', function () {
+        var table = layui.table;
+        //第一个实例
+        table.render({
+            id: 'bookList',
+            elem: '#books'
+            , url: '/book/page' //数据接口
+            , request: {
+                pageName: 'pageNum',
+                limitName: 'pageSize'
+            },
+            where: buildWhere()
+            , page: true //开启分页
+            , parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.message,
+                    "count": res.data.total,
+                    "data": res.data.list
+                }
+            }
+            , cols: [[ //表头
+                {field: 'id', title: 'ID', width: 80, sort: false, fixed: 'left'}
+                , {field: 'name', title: 'name', width: 200}
+                , {field: 'author', title: 'author', width: 200, sort: false}
+                , {field: 'price', title: 'price', width: 80}
+                , {field: 'isbn', title: 'isbn', width: 200}
+                , {field: 'createTime', title: 'createTime', width: 250, sort: false}
+                , {field: 'updateTime', title: 'updateTime', width: 250}
+                , {title: 'operate', width: 300, templet: '#barDemo'}
+            ]]
+        });
+
+    });
+
+    /**
+     * 绑定工具条模板
+     */
+    layui.use('table', function () {
+        var table = layui.table;
+        //工具条事件
+        table.on('tool(books)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+
+            if (layEvent === 'detail') { //查看
+                layer.open({
+                    title: 'Tips',
+                    content: 'book detail'
+                });
+            } else if (layEvent === 'edit') {
+                // 写值到 modal
+                $("#id").val(data.id);
+                $("#name").val(data.name);
+                $("#author").val(data.author);
+                $("#price").val(data.price);
+                $("#isbn").val(data.isbn);
+
+                $("#bookModalLabel").text("Edit book");
+
+            } else if (layEvent === 'del') { //删除
+                layer.confirm('confirm to delete?', function (index) {
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    axios({
+                        url: '/book?isbn=' + data.isbn,
+                        method: 'delete'
+                    }).then(function (resp) {
+                        if (resp.status === 200 && resp.data.code === 0) {
+                            layer.open({
+                                title: 'tips',
+                                content: resp.data.message
+                            });
+                            reloadBookList();
+                        } else {
+                            layer.open({
+                                title: 'tips',
+                                content: 'request failed'
+                            });
+                        }
+                    });
+                });
+            } else if (layEvent === 'borrow') {
+                let isbn = data.isbn;
+
+                axios({
+                    url: '/book/borrowing?isbn=' + isbn,
+                    method: 'put'
+                }).then(function (response) {
+                    if (response.status === 200 && response.data.code === 0) {
+                        layer.open({
+                            title: 'Tips',
+                            content: 'borrow book success.'
+                        });
+                    } else {
+                        layer.open({
+                            title: 'Tips',
+                            content: 'request failed'
+                        });
+                    }
+                });
+            } else if (layEvent === 'returnBook') {
+                axios({
+                    url: '/book/returnBook?isbn=' + data.isbn,
+                    method: 'put'
+                }).then(function (resp) {
+                    if (resp.status === 200 && resp.data.code === 0) {
+                        layer.open({
+                            title: 'tips',
+                            content: resp.data.message
+                        });
+                    } else {
+                        layer.open({
+                            title: 'tips',
+                            content: 'request failed'
+                        });
+                    }
+                });
+            }
+        });
+    })
+
+    /**
+     * 表格重载函数
+     */
+    function reloadBookList() {
+        layui.table.reload('bookList', {
+            where: buildWhere()
+        });
+    }
+
+    function saveBook() {
+        axios({
+            url: '/book',
+            method: 'post',
+            data: {
+                id: $("#id").val(),
+                name: $("#name").val(),
+                author: $("#author").val(),
+                price: $("#price").val(),
+                isbn: $("#isbn").val(),
+                updateTime: new Date().getTime()
+            }
+        }).then(function (resp) {
+            if (resp.data.code === 0) {
+                layer.open({
+                    title: 'tips',
+                    content: resp.data.message
+                });
+                reloadBookList();
+            } else {
+                layer.open({
+                    title: 'tips',
+                    content: 'request failed'
+                });
+            }
+        }).catch(function (error){
+            if (error.response){
+                layer.open({
+                    title: 'tips',
+                    content: 'request failed'
+                });
+            }
+        });
+    }
+
+    /**
+     * 清空bookModal的
+     */
+    function initBookModal() {
+        $("#bookModalLabel").text('Add book');
+        $("#id").val(null);
+        $("#name").val(null);
+        $("#author").val(null);
+        $("#price").val(null);
+        $("#isbn").val(null);
+    }
+</script>
+</body>
+</html>

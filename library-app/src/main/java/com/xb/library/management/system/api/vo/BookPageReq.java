@@ -13,4 +13,6 @@ public class BookPageReq {
     private String author;
 
     private String isbn;
+
+    private Boolean borrowable;
 }
