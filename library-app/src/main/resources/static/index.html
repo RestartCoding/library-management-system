@@ -5,10 +5,13 @@
     <title>index</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.7.6/css/layui.css" media="all">
     <link rel="stylesheet" href="/css/bootstrap.css">
+    <script src="https://code.jquery.com/jquery-3.6.2.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
     <style>
         .nav-div {
             display: grid;
         }
+
         .nav {
             margin: auto;
         }
@@ -18,7 +21,7 @@
 
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-xs" lay-event="detail">detail</a>
-        <a class="layui-btn layui-btn-xs" lay-event="edit">edit</a>
+        <a class="layui-btn layui-btn-xs" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" lay-event="edit">edit</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">del</a>
         <!--         这里同样支持 laytpl 语法，如： -->
         {{#  if(d.borrowable){ }}
@@ -58,26 +61,75 @@
     <form class="row g-3">
         <div class="col-md-2">
             <label for="name" class="form-label">name</label>
-            <input class="form-control" id="name" onchange="reloadBookList()">
+            <input class="form-control" id="nameQuery" onchange="reloadBookList()">
         </div>
 
         <div class="col-md-2">
             <label for="author" class="form-label">author</label>
-            <input class="form-control" id="author" onchange="reloadBookList()">
+            <input class="form-control" id="authorQuery" onchange="reloadBookList()">
         </div>
 
         <div class="col-md-2">
             <label for="isbn" class="form-label">isbn</label>
-            <input class="form-control" id="isbn" onchange="reloadBookList()">
+            <input class="form-control" id="isbnQuery" onchange="reloadBookList()">
         </div>
 
     </form>
 
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="layui-form-item" style="display: none">
+                            <label class="layui-form-label">name</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="id" name="name" required  lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">name</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="name" name="name" required  lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">author</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="author" name="author" required  lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">price</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="price" name="price" required  lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">isbn</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="isbn" name="isbn" required  lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="saveBook()">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <table id="books" lay-filter="books"></table>
 
     <div style="margin-left: 40%;margin-right: 40%; text-align: center">
-        <input type="button" value="add" class="layui-btn layui-btn-primary layui-border-orange"
-               onclick="location.href='/addBook.html'">
+        <input type="button" value="add" class="layui-btn layui-btn-primary layui-border-orange" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="clearBookModal()">
     </div>
 </div>
 
@@ -100,9 +152,9 @@
                 limitName: 'pageSize'
             },
             where: {
-                name: document.getElementById('name').value,
-                author: document.getElementById('author').value,
-                isbn: document.getElementById('isbn').value
+                name: document.getElementById('nameQuery').value,
+                author: document.getElementById('authorQuery').value,
+                isbn: document.getElementById('isbnQuery').value
             }
             , page: true //开启分页
             , parseData: function (res) {
@@ -143,6 +195,13 @@
                     title: 'Tips',
                     content: 'book detail'
                 });
+            }else if (layEvent === 'edit'){
+                // 写值到 modal
+                $("#id").val(data.id);
+                $("#name").val(data.name);
+                $("#author").val(data.author);
+                $("#price").val(data.price);
+                $("#isbn").val(data.isbn);
             } else if (layEvent === 'del') { //删除
                 layer.confirm('confirm to delete?', function (index) {
                     layer.close(index);
@@ -150,33 +209,21 @@
                     axios({
                         url: '/book?isbn=' + data.isbn,
                         method: 'delete'
-                    }).then(function (resp){
-                        layer.open({
-                            title: 'tips',
-                            content: resp.data.message
-                        });
-
-                        reloadBookList();
-                    }).catch(function (error){
-                        layer.open({
-                            title: 'tips',
-                            content: 'request failed'
-                        });
-                    })
+                    }).then(function (resp) {
+                        if (resp.status === 200 && resp.data.code === 0) {
+                            layer.open({
+                                title: 'tips',
+                                content: resp.data.message
+                            });
+                            reloadBookList();
+                        } else {
+                            layer.open({
+                                title: 'tips',
+                                content: 'request failed'
+                            });
+                        }
+                    });
                 });
-            } else if (layEvent === 'edit') { //编辑
-                //do something
-
-                layer.open({
-                    title: 'Tips',
-                    content: 'edit book'
-                });
-
-                //同步更新缓存对应的值
-                // obj.update({
-                //     username: '123'
-                //     ,title: 'xxx'
-                // });
             } else if (layEvent === 'borrow') {
                 let isbn = data.isbn;
 
@@ -184,7 +231,7 @@
                     url: '/book/borrowing?isbn=' + isbn,
                     method: 'put'
                 }).then(function (response) {
-                    if (response.data.code === 0) {
+                    if (response.status === 200 && response.data.code === 0) {
                         layer.open({
                             title: 'Tips',
                             content: 'borrow book success.'
@@ -192,27 +239,27 @@
                     } else {
                         layer.open({
                             title: 'Tips',
-                            content: response.data.message
+                            content: 'request failed'
                         });
                     }
-                }).catch(function (error) {
-                    alert("request failed.")
-                })
+                });
             } else if (layEvent === 'returnBook') {
                 axios({
                     url: '/book/returnBook?isbn=' + data.isbn,
                     method: 'put'
                 }).then(function (resp) {
-                    layer.open({
-                        title: 'tips',
-                        content: resp.data.message
-                    });
-                }).catch(function (error) {
-                    layer.open({
-                        title: 'tips',
-                        content: 'requests error'
-                    });
-                })
+                    if (resp.status === 200 && resp.data.code === 0) {
+                        layer.open({
+                            title: 'tips',
+                            content: resp.data.message
+                        });
+                    } else {
+                        layer.open({
+                            title: 'tips',
+                            content: 'request failed'
+                        });
+                    }
+                });
             }
         });
     })
@@ -234,11 +281,50 @@
     function reloadBookList() {
         layui.table.reload('bookList', {
             where: {
-                name: document.getElementById('name').value,
-                author: document.getElementById('author').value,
-                isbn: document.getElementById('isbn').value
+                name: document.getElementById('nameQuery').value,
+                author: document.getElementById('authorQuery').value,
+                isbn: document.getElementById('isbnQuery').value
             }
         });
+    }
+
+    function saveBook(){
+        axios({
+            url: '/book',
+            method: 'post',
+            data: {
+                id: $("#id").val(),
+                name: $("#name").val(),
+                author: $("#author").val(),
+                price: $("#price").val(),
+                isbn: $("#isbn").val(),
+                updateTime: new Date().getTime()
+            }
+        }).then(function (resp){
+           if (resp.data.code === 0){
+               layer.open({
+                   title: 'tips',
+                   content: resp.data.message
+               });
+               reloadBookList();
+           } else {
+               layer.open({
+                   title: 'tips',
+                   content: 'request failed'
+               });
+           }
+        });
+    }
+
+    /**
+     * 清空bookModal的
+     */
+    function clearBookModal(){
+        $("#id").val(null);
+        $("#name").val(null);
+        $("#author").val(null);
+        $("#price").val(null);
+        $("#isbn").val(null);
     }
 </script>
 </body>

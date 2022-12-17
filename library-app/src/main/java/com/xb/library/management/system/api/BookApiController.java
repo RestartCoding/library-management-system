@@ -33,7 +33,7 @@ public class BookApiController implements BookApi {
         boolean success = limiter.tryAcquire(1, 0, TimeUnit.SECONDS);
         if (success) {
             bookService.saveBook(book);
-            ApiResponse<Void> apiResponse = ApiResponse.<Void>builder().code(0).build();
+            ApiResponse<Void> apiResponse = ApiResponse.<Void>builder().code(0).message("operate success").build();
             return ResponseEntity.ok(apiResponse);
         }
         throw new HttpServerErrorException(HttpStatus.REQUEST_TIMEOUT);
