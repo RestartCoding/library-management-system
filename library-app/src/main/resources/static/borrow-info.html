@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>borrow info</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="//unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="//unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <template>
+        <el-table
+                :data="tableData"
+                stripe
+                highlight-current-row
+                border
+                style="width: 100%">
+            <el-table-column
+                    fixed
+                    type="index"
+                    width="50">
+            </el-table-column>
+            <el-table-column
+                    sortable
+                    prop="id"
+                    label="id"
+                    width="150">
+            </el-table-column>
+            <el-table-column
+                    prop="username"
+                    label="username"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="isbn"
+                    label="isbn"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="bookName"
+                    label="bookName"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="borrowTime"
+                    label="borrowTime"
+                    width="300">
+            </el-table-column>
+            <el-table-column
+                    prop="returnTime"
+                    label="returnTime"
+                    width="120">
+            </el-table-column>
+            <el-table-column
+                    fixed="right"
+                    label="操作"
+                    width="100">
+                <template slot-scope="scope">
+                    <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                    <el-button type="text" size="small">编辑</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+    </template>
+</div>
+</body>
+
+<script>
+
+
+    console.log('hahaha');
+
+    axios({
+        url: '/borrow-info/page?pageNum=1&pageSize=10',
+        method: 'get'
+    }).then(function (resp) {
+        if (resp.data.code === 0) {
+            console.log(resp.data.data);
+            var Main = {
+                data() {
+                    return {
+                        tableData: resp.data.data.list
+                    }
+                },
+                methods: {
+                    handleClick(row) {
+                        alert(row.name);
+                    }
+                }
+            }
+            var Ctor = Vue.extend(Main)
+            new Ctor().$mount('#app')
+        }else if (resp.data.code === -1){
+            alert('request failed');
+        }
+    }).catch(function (err) {
+        if (err.response) {
+            alert('request failed');
+        }
+    });
+</script>
+
+</html>
