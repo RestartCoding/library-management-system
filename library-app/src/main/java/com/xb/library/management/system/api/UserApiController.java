@@ -60,4 +60,10 @@ public class UserApiController implements UserApi {
         ApiPage<User> apiPage = ApiPage.fromPage(page);
         return ApiResponse.<ApiPage<User>>builder().code(0).data(apiPage).build();
     }
+
+    @Override
+    public ApiResponse<User> profile() {
+        User user = userService.profile();
+        return ApiResponse.<User>builder().code(0).data(user).build();
+    }
 }

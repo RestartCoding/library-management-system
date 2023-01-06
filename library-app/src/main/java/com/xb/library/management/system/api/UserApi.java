@@ -55,4 +55,12 @@ public interface UserApi {
     @PreAuthorize("hasRole('" + SysConstant.ROLE_ADMINISTRATOR + "')")
     @GetMapping("/page")
     ApiResponse<ApiPage<User>> page(@Valid PageInfo pageInfo, @Valid UserPageReq userPageReq);
+
+    /**
+     * profile
+     *
+     * @return profile
+     */
+    @GetMapping("/profile")
+    ApiResponse<User> profile();
 }

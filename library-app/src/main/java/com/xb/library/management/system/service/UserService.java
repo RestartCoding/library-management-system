@@ -1,7 +1,6 @@
 package com.xb.library.management.system.service;
 
 import com.xb.library.management.system.api.vo.UserPageReq;
-import com.xb.library.management.system.domain.ApiPage;
 import com.xb.library.management.system.domain.PageInfo;
 import com.xb.library.management.system.domain.User;
 import com.xb.library.management.system.exception.BusinessException;
@@ -55,4 +54,9 @@ public interface UserService {
      * @return 用户分页
      */
     Page<User> page(PageInfo pageInfo, UserPageReq req);
+
+    /**
+     * @return profile
+     */
+    User profile();
 }

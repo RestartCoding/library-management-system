@@ -14,7 +14,7 @@ function writeHeader() {
         '                    <a class="nav-link" href="#">Link</a>\n' +
         '                </li>\n' +
         '                <li class="nav-item">\n' +
-        '                    <a class="nav-link disabled">Disabled</a>\n' +
+        '                    <a class="nav-link" href="/profile.html">Profile</a>\n' +
         '                </li>\n' +
         '            </ul>\n' +
         '        </div>');

@@ -12,8 +12,10 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -78,5 +80,13 @@ public class UserServiceImpl implements UserService {
         Example<User> example = Example.of(user, matcher);
 
         return userRepository.findAll(example, PageRequest.of(pageInfo.getPageNum() - 1, pageInfo.getPageSize()));
+    }
+
+    @Override
+    public User profile() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        Assert.isTrue(optionalUser.isPresent());
+        return optionalUser.get();
     }
 }
