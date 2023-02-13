@@ -7,5 +7,6 @@ mvn package
 # 启动
 java -jar library-app-1.0.0.jar
 
-# 首页地址
-localhost:8080/index.html
+# 访问
+localhost:8080/index.html。
+初始账号 admin 123456
