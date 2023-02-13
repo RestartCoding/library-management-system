@@ -8,7 +8,7 @@ function writeHeader() {
         '                    <a class="nav-link active" aria-current="page" href="/user.html">User</a>\n' +
         '                </li>\n' +
         '                <li class="nav-item">\n' +
-        '                    <a class="nav-link" href="/book.html">Book</a>\n' +
+        '                    <a class="nav-link" href="/index.html">Book</a>\n' +
         '                </li>\n' +
         '                <li class="nav-item">\n' +
         '                    <a class="nav-link" href="#">Link</a>\n' +
